@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Search Movies</title>
+    <link rel="stylesheet" href="styling.css">
+    
+</head>
+<body>
+    <h1>Search for a Movie</h1>
+    <!--Form to accept search from user-->
+    <form id = "searchform" action="/search-results" method="GET">
+        <label for="searchTerm">Movie Title:</label>
+        <input type="text" id="searchTerm" name="searchTerm" required>
+        <button type="submit">Search</button>
+    </form>
+    <!--Place for search results-->
+    <div>
+        <ul id="resultsList">
+
+        </ul>
+
+    </div>
+    <!--Script to update page-->
+    <script>
+        //when submit button is pressed
+        document.getElementById('searchform').addEventListener('submit', function (e) {
+            e.preventDefault(); 
+            const query = document.getElementById('searchTerm').value;
+            //retrieves GET information
+            fetch(`/search-results?searchTerm=${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    const resultsList = document.getElementById('resultsList');
+                    resultsList.innerHTML = ''; 
+
+                    // Display each result in a list item
+                    if (data.length > 0) {
+                        data.forEach(result => {
+                            const listItem = document.createElement('li');
+
+                            listItem.innerHTML = `${result.title}, ${result.genre}`;
+                            resultsList.appendChild(listItem);
+                        });
+                    } else {
+                        resultsList.innerHTML = '<li>No results found.</li>';
+                    }
+                })
+                .catch(error => console.error('Error fetching search results:', error));
+        });
+    </script>
+</body>
+</html>
